@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+table {
+  table-layout: auto;
+  width: auto;
+  border: 0cap;
+  background-color: rgb(223, 223, 223);
+}
+
+td,
+th {
+  white-space: nowrap;
+  width: auto;
+  min-width: 50px;
+  padding: 10px 5px;
+  border: 1px solid black;
+  letter-spacing: 1px;
+}
+
+span {
+  margin: 5px 0;
+  padding: 5px;
+}
+
+input {
+  width: 80px;
+  border: 1px solid black;
+  padding: 0 5px;
+  border-radius: 3px;
+  outline: none;
+}
