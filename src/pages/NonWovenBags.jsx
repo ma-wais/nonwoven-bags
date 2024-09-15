@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 const Chart = () => {
   const [D78, setD78] = useState(515);
@@ -24,29 +24,9 @@ const Chart = () => {
   const [N4, setN4] = useState(0.2);
   const [V4, setV4] = useState(0);
   const [AE1toAL1, setAE1toAL1] = useState([]);
-
-  const inputs = [
-    { label: "Nonwoven", state: [D78, setD78] },
-    { label: "Labor/Elec", state: [D79, setD79] },
-    { label: "Labor/Elec PP", state: [D80, setD80] },
-    { label: "Cutting", state: [D81, setD81] },
-    { label: "Filling/Unfilling", state: [D82, setD82] },
-    { label: "Tape", state: [D83, setD83] },
-    { label: "Zip", state: [D84, setD84] },
-    { label: "Plate 28x40", state: [D86, setD86] },
-    { label: "Plate 35x50", state: [D87, setD87] },
-    { label: "Plate 35x50", state: [D88, setD88] },
-    { label: "Plate 40x56", state: [D89, setD89] },
-    { label: "Plate 43x63", state: [D90, setD90] },
-    { label: "Ink", state: [D91, setD91] },
-    { label: "Salery", state: [A93, setA93] },
-    { label: "Electric", state: [A95, setA95] },
-    { label: "PP", state: [A97, setA97] },
-    { label: "Nonwoven+Zeen", state: [A99, setA99] },
-    { label: "Slider", state: [D85, setD85] },
-    { label: "%", state: [N4, setN4] },
-  ];
-  const sizes = [
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editedSize, setEditedSize] = useState({ width: "", height: "" });
+  const [sizes, setSizes] = useState([
     [21, 28],
     [22, 28],
     [21, 30],
@@ -96,6 +76,86 @@ const Chart = () => {
     [32, 42],
     [32, 40],
     [34, 41.5],
+  ]);
+  const [bb5Values, setBb5Values] = useState(
+    Array.from({ length: sizes.length }, (_, index) =>
+      index < 5
+        ? 4
+        : index < 9
+        ? 2
+        : index === 9
+        ? 1
+        : index === 10
+        ? 2
+        : index < 48
+        ? 1
+        : index === 48
+        ? 2
+        : 0.5
+    )
+  );
+  const [AW5Values, setAW5Values] = useState(
+    Array.from({ length: sizes.length }, (_, index) =>
+      index < 10
+        ? 2
+        : index === 10
+        ? 4
+        : index < 16
+        ? 2
+        : index === 16
+        ? 4
+        : index < 21
+        ? 2.25
+        : index < 25
+        ? 4
+        : index < 30
+        ? 5
+        : index < 34
+        ? 4
+        : index === 34
+        ? 3
+        : index < 37
+        ? 2.25
+        : index === 37
+        ? 4
+        : index === 38
+        ? 2.25
+        : index === 39
+        ? 2
+        : index < 42
+        ? 5
+        : index < 45
+        ? 4
+        : index < 47
+        ? 5
+        : index === 47
+        ? 2
+        : index < 49
+        ? 3
+        : 0
+    )
+  );
+
+  const inputs = [
+    { label: "Nonwoven", state: [D78, setD78] },
+    { label: "Labor/Elec", state: [D79, setD79] },
+    { label: "Labor/Elec PP", state: [D80, setD80] },
+    { label: "Cutting", state: [D81, setD81] },
+    { label: "Filling/Unfilling", state: [D82, setD82] },
+    { label: "Tape", state: [D83, setD83] },
+    { label: "Zip", state: [D84, setD84] },
+    { label: "Plate 28x40", state: [D86, setD86] },
+    { label: "Plate 35x50", state: [D87, setD87] },
+    { label: "Plate 35x50", state: [D88, setD88] },
+    { label: "Plate 40x56", state: [D89, setD89] },
+    { label: "Plate 43x63", state: [D90, setD90] },
+    { label: "Ink", state: [D91, setD91] },
+    { label: "Salery", state: [A93, setA93] },
+    { label: "Electric", state: [A95, setA95] },
+    { label: "PP", state: [A97, setA97] },
+    { label: "Nonwoven+Zeen", state: [A99, setA99] },
+    { label: "Slider", state: [D85, setD85] },
+    { label: "%", state: [N4, setN4] },
   ];
   const AE3toAL3 = [120, 115, 110, 100, 90, 80, 70, 140];
   const AE2toAL2 = AE3toAL3.map(() => D78 + 5);
@@ -116,8 +176,7 @@ const Chart = () => {
     }
   }, [AE3toAL3, AE2toAL2]);
 
-  const columnHeaders = [
-    { key: "A", value: "Size" },
+  const columnHeaders = useMemo(() => [
     { key: "C", value: "Stitching" },
     { key: "D", value: "120GSM" },
     { key: "E", value: "115GSM" },
@@ -130,52 +189,26 @@ const Chart = () => {
     { key: "L", value: "Process" },
     { key: "M", value: "Zip" },
     { key: "N", value: "" },
-
-    { key: "O", value: N4toV4[0] },
-    { key: "P", value: N4toV4[1] },
-    { key: "Q", value: N4toV4[2] },
-    { key: "R", value: N4toV4[3] },
-    { key: "S", value: N4toV4[4] },
-    { key: "T", value: N4toV4[5] },
-    { key: "U", value: N4toV4[6] },
-    { key: "V", value: N4toV4[7] },
-    { key: "V", value: N4toV4[8] },
-    { key: "V", value: N4toV4[9] },
-
-    { key: "W", value: AE3toAL3[0] },
-    { key: "X", value: AE3toAL3[1] },
-    { key: "Y", value: AE3toAL3[2] },
-    { key: "Z", value: AE3toAL3[3] },
-    { key: "AA", value: AE3toAL3[4] },
-    { key: "AB", value: AE3toAL3[5] },
-    { key: "AC", value: AE3toAL3[6] },
-    { key: "AD", value: AE3toAL3[7] },
-    { key: "AE", value: AE4toAL4[0] + "%" },
-    { key: "AF", value: AE4toAL4[1] + "%" },
-    { key: "AG", value: AE4toAL4[2] + "%" },
-    { key: "AH", value: AE4toAL4[3] + "%" },
-    { key: "AI", value: AE4toAL4[4] + "%" },
-    { key: "AJ", value: AE4toAL4[5] + "%" },
-    { key: "AK", value: AE4toAL4[6] + "%" },
-    { key: "AL", value: AE4toAL4[7] + "%" },
+    ...N4toV4.map((value, index) => ({ key: String.fromCharCode(79 + index), value })),
+    ...AE3toAL3.map((value, index) => ({ key: String.fromCharCode(87 + index), value })),
+    ...AE4toAL4.map((value, index) => ({ key: String.fromCharCode(174 + index), value: value + "%" })),
     { key: "AP", value: "L/E" },
     { key: "AN", value: "O Head" },
     { key: "AO", value: "Act St" },
     { key: "AM", value: "Sttich" },
     { key: "AQ", value: "Zip" },
     { key: "AR", value: "Ups" },
-  ];
+  ], [N4toV4, AE3toAL3, AE4toAL4]);
 
-  const calculateRow = (index) => {
+  const calculateRow = (index = 0, BB5 = 4, AW5 = 2) => {
     const A5 = sizes[index][0];
     const B5 = sizes[index][1];
-    const BB5 = 4;
-    const AW5 = 2;
     const AV5 = AW5 + 1;
     const AM5 = D79 / BB5;
     const AN5 = (AZ3 * A5 * B5) / BB5;
     const AO5 = AV5 + AM5 + AN5;
     const AY = ((sizes[index][1] / BB5) * D84) / 6800 + D85;
+    const zip = Math.ceil(AY * 4) / 4;
 
     let N5;
     if (index === 0 || index === 1) {
@@ -243,22 +276,20 @@ const Chart = () => {
       L5 = D88;
     }
 
-    const D5 = ceilToHalf(W5);
-    const E5 = ceilToHalf(X5);
-    const F5 = ceilToHalf(Y5);
-    const G5 = ceilToHalf(Z5);
-    const H5 = ceilToHalf(AA5);
-    const I5 = ceilToHalf(AB5);
-    const J5 = ceilToHalf(AC5);
-    const K5 = ceilToHalf(AD5);
+    const D5 = ceilToHalf(W5 + zip);
+    const E5 = ceilToHalf(X5 + zip);
+    const F5 = ceilToHalf(Y5 + zip);
+    const G5 = ceilToHalf(Z5 + zip);
+    const H5 = ceilToHalf(AA5 + zip);
+    const I5 = ceilToHalf(AB5 + zip);
+    const J5 = ceilToHalf(AC5 + zip);
+    const K5 = ceilToHalf(AD5 + zip);
 
     function ceilToHalf(num) {
       return Math.ceil(num * 2) / 2;
     }
 
     return [
-      A5,
-      B5,
       "Simple with ZIP Handle",
       D5,
       E5,
@@ -269,7 +300,7 @@ const Chart = () => {
       J5,
       K5,
       L5,
-      "Zip",
+      zip,
       "",
       "",
       N5.toFixed(2),
@@ -302,7 +333,7 @@ const Chart = () => {
 
       AM5,
       AN5.toFixed(5),
-      AO5.toFixed(2),
+      (AO5 + 0.01).toFixed(2),
       AW5,
       AV5,
       AY.toFixed(2),
@@ -314,17 +345,48 @@ const Chart = () => {
     return (AE3 / 1000 / 1550) * AE2 + (AE3 / 1000 / 1550) * AE2 * AE4;
   };
 
-  // const rows = () => {
-  //   let calculatedRows = [];
-  //   for (let i = 0; i < sizes.length; i++) {
-  //     calculatedRows.push(calculateRow(i));
-  //   }
-  //   return calculatedRows;
-  // };
+  const handleBB5Change = (index, newValue) => {
+    const updatedBb5Values = [...bb5Values];
+    updatedBb5Values[index] = parseFloat(newValue) || 0;
+    setBb5Values(updatedBb5Values);
+  };
+
+  const handleAW5Change = (index, newValue) => {
+    const updatedAW5Values = [...AW5Values];
+    updatedAW5Values[index] = parseFloat(newValue) || 0;
+    setAW5Values(updatedAW5Values);
+  };
+
+  const handleEdit = (index) => {
+    setEditingIndex(index);
+    setEditedSize({ width: sizes[index][0], height: sizes[index][1] });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedSize((prevSize) => ({
+      ...prevSize,
+      [name]: value,
+    }));
+  };
+
+  const handleSave = (index) => {
+    const width = parseFloat(editedSize.width);
+    const height = parseFloat(editedSize.height);
+
+    if (!isNaN(width) && !isNaN(height)) {
+      const updatedSizes = sizes.map((size, i) =>
+        i === index ? [width, height] : size
+      );
+      setSizes(updatedSizes);
+      setEditingIndex(null);
+    }
+  };
+
   const rows = () => {
     let calculatedRows = [];
-    for (let i = 0; i < 1; i++) {
-      calculatedRows.push(calculateRow(i));
+    for (let i = 0; i < sizes.length; i++) {
+      calculatedRows.push(calculateRow(i, bb5Values[i], AW5Values[i]));
     }
     return calculatedRows;
   };
@@ -345,48 +407,125 @@ const Chart = () => {
           </div>
         ))}
       </div>
-
-      <table border="1">
-        <thead>
-          <tr>
-            <th colSpan={14}>Nonwoven Sheet Print</th>
-            <th colSpan={2}></th>
-            <th colSpan={8}>T/P</th>
-            <th colSpan={8}></th>
-            {AE3toAL3.map((value, idx) => (
-              <th key={idx}>{value}</th>
-            ))}
-            <th></th>
-            <th rowSpan={2}>
-              Ink <br /> {AZ3}
-            </th>
-          </tr>
-          <tr>
-            {columnHeaders.map((col, idx) => (
-              <th colSpan={col.value === "Size" ? 2 : 1} key={idx}>
-                {col.value}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows().map((row, rowIndex) => (
-            <tr
-              key={rowIndex}
-              className={rowIndex % 2 === 0 ? "bg-gray-100" : "bg-white"}
-            >
-              {row.map((cell, cellIndex) => (
-                <td
-                  key={cellIndex}
-                  className="border border-gray-300 px-2 py-1 text-sm"
-                >
-                  {cell}
+      <div className="flex">
+        <table>
+          <thead>
+            <tr>
+              <th colSpan={3}>Sizes</th>
+              <th rowSpan={2}>Ups</th>
+              <th rowSpan={2}>Act St</th>
+            </tr>
+            <tr>
+              <th colSpan={2}>Sizes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sizes.map((size, index) => (
+              <tr key={index}>
+                <td>
+                  {editingIndex === index ? (
+                    <input
+                      type="number"
+                      name="width"
+                      value={editedSize.width}
+                      onChange={handleInputChange}
+                    />
+                  ) : (
+                    size[0]
+                  )}
                 </td>
+                <td>
+                  {editingIndex === index ? (
+                    <input
+                      type="number"
+                      name="height"
+                      value={editedSize.height}
+                      onChange={handleInputChange}
+                    />
+                  ) : (
+                    size[1]
+                  )}
+                </td>
+                <td>
+                  {editingIndex === index ? (
+                    <button
+                      onClick={() => handleSave(index)}
+                      className="bg-green-500 text-white"
+                    >
+                      Save
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleEdit(index)}
+                      className="bg-blue-500 text-white p-1"
+                    >
+                      Edit
+                    </button>
+                  )}
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    value={bb5Values[index]}
+                    defaultValue={0}
+                    onChange={(e) => handleBB5Change(index, e.target.value)}
+                    className="border p-1"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    value={AW5Values[index]}
+                    defaultValue={0}
+                    onChange={(e) => handleAW5Change(index, e.target.value)}
+                    className="border p-1"
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <table border="1">
+          <thead>
+            <tr>
+              <th colSpan={12}>Nonwoven Sheet Print</th>
+              <th colSpan={2}></th>
+              <th colSpan={8}>T/P</th>
+              <th colSpan={8}></th>
+              {AE3toAL3.map((value, idx) => (
+                <th key={idx}>{value}</th>
+              ))}
+              <th></th>
+              <th rowSpan={2}>
+                Ink <br /> {AZ3}
+              </th>
+            </tr>
+            <tr>
+              {columnHeaders.map((col, idx) => (
+                <th key={idx}>{col.value}</th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows().map((row, rowIndex) => (
+              <tr
+                key={rowIndex}
+                className={rowIndex % 2 === 0 ? "bg-gray-100" : "bg-white"}
+              >
+                {row.map((cell, cellIndex) => (
+                  <td
+                    key={cellIndex}
+                    className="border border-gray-300 px-2 py-1 text-sm"
+                  >
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

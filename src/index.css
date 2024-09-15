@@ -31,3 +31,7 @@ input {
   border-radius: 3px;
   outline: none;
 }
+
+.inputs tr, .inputs td {
+  padding: 8px 5px !important;
+}
