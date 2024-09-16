@@ -262,14 +262,14 @@ const Chart = () => {
 
     if (
       index === 22 ||
-      index === 23 ||
-      index === 27 ||
-      index === 28 ||
-      index === 32 ||
-      index === 33 ||
-      index === 34 ||
-      index === 35 ||
-      index > 36
+      index === 23
+      // index === 27 ||
+      // index === 28 ||
+      // index === 32 ||
+      // index === 33 ||
+      // index === 34 ||
+      // index === 35 ||
+      // index > 36
     ) {
       L5 = D88;
     }
